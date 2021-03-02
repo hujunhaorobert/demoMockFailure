@@ -1,6 +1,6 @@
 # demoMockFailure
 
-How to demo the failure:
+How to demo the failure in https://github.com/intuit/karate/issues/1480:
 1. git clone the repo
 2. change directry to demoMockFailure 
 3. Launch the mock server by specifying different standalone karate-{{version}}.jar
