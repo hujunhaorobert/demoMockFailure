@@ -3,8 +3,10 @@
 How to demo the failure:
 1. git clone the repo
 2. change directry to demoMockFailure 
-3. Launch the mock server by specifying different standalone karate-{{version}}.jar: 
+3. Launch the mock server by specifying different standalone karate-{{version}}.jar
+ ```
 java -jar karate-{{version}}.jar -m main-mock-server.feature -p 8644
+```
 
 1. if use standalone karate-0.9.6.jar,  the mock server could be launched successfully without the failure. And you can also verify the mock server is up and running by typing the url (http://localhost:8644/greeting) in any browser.  
 ```
