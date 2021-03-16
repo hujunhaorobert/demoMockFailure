@@ -12,7 +12,8 @@ function() {
     karate.log('karate.env system property was: ', env);
     karate.log('karate.server system property was: ', server);
     var config = {
-        env: env
+        env: env,
+        mockServerHost: 'http://localhost:8644'
     };
 
     if (env.toLowerCase() === 'poc') {

@@ -1,14 +1,19 @@
 # demoMockFailure
 
-How to demo the failure in https://github.com/intuit/karate/issues/1480:
+How to demo the failure in https://github.com/intuit/karate/issues/1517:
 1. git clone the repo
 2. change directry to demoMockFailure 
-3. Launch the mock server by specifying different standalone karate-{{version}}.jar
+3. Launch the mock server by specifying different standalone karate-{{version}}.jar,
  ```
 java -jar karate-{{version}}.jar -m main-mock-server.feature -p 8644
 ```
+4. In a seperate terminal window, run the test feature against the mock server, please note: the karate standalone jar version should match the mock server version.
+```
+java -cp karate-{{version}}.jar:. com.intuit.karate.Main -C MockService-Test.feature
+```
 
-1. if use standalone karate-0.9.6.jar,  the mock server could be launched successfully without the failure. And you can also verify the mock server is up and running by typing the url (http://localhost:8644/greeting) in any browser.  
+Test result #1 :
+1. if use standalone karate-0.9.6.jar,  the mock server and test feature could be launched and test case runs successfully without the failure.  
 ```
 $ java -jar karate-0.9.6.jar -m main-mock-server.feature -p 8644
 11:32:44.987 [main]  INFO  com.intuit.karate.Main - Karate version: 0.9.6
@@ -21,62 +26,58 @@ $ java -jar karate-0.9.6.jar -m main-mock-server.feature -p 8644
 11:32:54.275 [nioEventLoopGroup-3-2] 1209683016 DEBUG com.intuit.karate - handling method: GET, uri: /greeting
 ```
 
-2. If use standalone karate-0.9.9.RC4.jar , you will get the same error mentioined in the begining of the thread https://github.com/intuit/karate/issues/1480
+2. If use standalone karate-1.0.0.jar or karate-0.9.9.RC4.jar, you will get the error mentioined in the begining of the thread https://github.com/intuit/karate/issues/1517
+Launch mock server works well.
 ```
-$ java -jar karate-0.9.9.RC4.jar -m main-mock-server.feature -p 8644
-11:41:24.342 [main]  INFO  com.intuit.karate - Karate version: 0.9.9.RC4
-11:41:25.639 [main]  INFO  com.intuit.karate - [print] Run background only once... 
-11:41:25.656 [main]  ERROR com.intuit.karate - mock-server background failed - main-mock-server.feature:5
-com.intuit.karate.KarateException: mock-server background failed - main-mock-server.feature:5
-        at com.intuit.karate.core.MockHandler.<init>(MockHandler.java:104)
-        at com.intuit.karate.core.MockServer$Builder.build(MockServer.java:107)
-        at com.intuit.karate.Main.call(Main.java:384)
-        at com.intuit.karate.Main.call(Main.java:57)
-        at picocli.CommandLine.executeUserObject(CommandLine.java:1933)
-        at picocli.CommandLine.access$1200(CommandLine.java:145)
-        at picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2332)
-        at picocli.CommandLine$RunLast.handle(CommandLine.java:2326)
-        at picocli.CommandLine$RunLast.handle(CommandLine.java:2291)
-        at picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2159)
-        at picocli.CommandLine.execute(CommandLine.java:2058)
-        at com.intuit.karate.Main.main(Main.java:291)
-Caused by: com.intuit.karate.KarateException: >>>> js failed:
-01: read('karate-config.js')
-<<<<
-org.graalvm.polyglot.PolyglotException: java.io.FileNotFoundException: null/karate-config.js (No such file or directory)
-- com.intuit.karate.resource.FileResource.getStream(FileResource.java:94)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:101)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:97)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:57)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:115)
-- <js>.:program(Unnamed:1)
+$ java -jar karate-1.0.0.jar -m main-mock-server.feature -p 8644
+```
+But the testing againg the mock shows the error:
+```
+$ java -cp karate-0.9.6.jar:. com.intuit.karate.Main -C MockService-Test.feature
+Junhaos-MacBook-Pro:demo junhaohu$ java -cp karate-1.0.0.jar:. com.intuit.karate.Main -C MockService-Test.feature
+15:29:07.762 [main]  INFO  com.intuit.karate - Karate version: 1.0.0
+15:29:07.923 [main]  INFO  com.intuit.karate - deleted directory: target
+15:29:08.159 [main]  DEBUG com.intuit.karate.Suite - [config] classpath:karate-config.js
+15:29:08.877 [main]  INFO  com.intuit.karate - karate.env system property was:  uat 
+15:29:08.878 [main]  INFO  com.intuit.karate - karate.server system property was:  localhost 
+15:29:08.916 [main]  INFO  com.intuit.karate - >> lock acquired, begin callonce: read('classpath:utils/utils.feature')
+15:29:08.939 [main]  INFO  com.intuit.karate - << lock released, cached callonce: read('classpath:utils/utils.feature')
+15:29:09.161 [main]  DEBUG com.intuit.karate - request:
+1 > GET http://localhost:8644/greeting
+1 > Host: localhost:8644
+1 > Connection: Keep-Alive
+1 > User-Agent: Apache-HttpClient/4.5.13 (Java/1.8.0_181)
+1 > Accept-Encoding: gzip,deflate
 
-main-mock-server.feature:5
-        at <feature>.: * call read('karate-config.js') (main-mock-server.feature:5:5)
-```
 
-3. Standalone karate-2.0.0.jar in this repo was build on top of the karate-0.9.9.RC4.jar with the fixing tasks integrated for fixing above failure, by following  https://github.com/intuit/karate/wiki/Developer-Guide, when launching the mock server, you will got the error java.lang.NullPointerException, which is also mentioned in the end of the thread https://github.com/intuit/karate/issues/1480
-```
-$ java -jar karate-2.0.0.jar -m main-mock-server.feature -p 8644
-11:41:46.420 [main]  INFO  com.intuit.karate - Karate version: 2.0.0
-11:41:47.715 [main]  INFO  com.intuit.karate - [print] Run background only once... 
-11:41:47.751 [main]  INFO  com.intuit.karate - karate.env system property was:  uat 
-11:41:47.751 [main]  INFO  com.intuit.karate - karate.server system property was:  localhost 
-11:41:47.782 [main]  ERROR com.intuit.karate - mock-server background failed - main-mock-server.feature:6
-com.intuit.karate.KarateException: mock-server background failed - main-mock-server.feature:6
-        at com.intuit.karate.core.MockHandler.<init>(MockHandler.java:104)
-        at com.intuit.karate.core.MockServer$Builder.build(MockServer.java:107)
-        at com.intuit.karate.Main.call(Main.java:384)
-        at com.intuit.karate.Main.call(Main.java:57)
-        at picocli.CommandLine.executeUserObject(CommandLine.java:1933)
-        at picocli.CommandLine.access$1200(CommandLine.java:145)
-        at picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2332)
-        at picocli.CommandLine$RunLast.handle(CommandLine.java:2326)
-        at picocli.CommandLine$RunLast.handle(CommandLine.java:2291)
-        at picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2159)
-        at picocli.CommandLine.execute(CommandLine.java:2058)
-        at com.intuit.karate.Main.main(Main.java:291)
-Caused by: com.intuit.karate.KarateException: java.lang.NullPointerException
-main-mock-server.feature:6
-        at <feature>.: * call read('utils/utils.feature') (main-mock-server.feature:6:6)
+15:29:09.508 [main]  DEBUG com.intuit.karate - response time in milliseconds: 326
+1 < 200
+1 < content-type: application/json
+1 < content-length: 107
+1 < server: Armeria/1.4.0
+1 < date: Tue, 16 Mar 2021 04:29:09 GMT
+{"id":0,"message":"Hello, uat Karate Mock Server is alive in localhost!","timestamp":"16-03-2021 03:29:09"}
+15:29:09.516 [main]  INFO  com.intuit.karate - karate.env system property was:  uat 
+15:29:09.516 [main]  INFO  com.intuit.karate - karate.server system property was:  localhost 
+15:29:09.532 [main]  ERROR com.intuit.karate - org.apache.http.ProtocolException: Target host is not specified, http call failed after 1 milliseconds for url: /greeting
+15:29:09.533 [main]  ERROR com.intuit.karate - MockService-Test.feature:16
+When method get
+http call failed after 1 milliseconds for url: /greeting
+MockService-Test.feature:16
+---------------------------------------------------------
+feature: MockService-Test.feature
+scenarios:  2 | passed:  1 | failed:  1 | time: 0.6167
+---------------------------------------------------------
+
+15:29:10.266 [main]  INFO  com.intuit.karate.Suite - <<fail>> feature 1 of 1 (0 remaining) MockService-Test.feature
+Karate version: 1.0.0
+======================================================
+elapsed:   2.34 | threads:    1 | thread time: 0.62 
+features:     1 | skipped:    0 | efficiency: 0.26
+scenarios:    2 | passed:     1 | failed: 1
+======================================================
+>>> failed features:
+http call failed after 1 milliseconds for url: /greeting
+MockService-Test.feature:16
+<<<
 ```
