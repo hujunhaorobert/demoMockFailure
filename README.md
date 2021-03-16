@@ -33,8 +33,7 @@ $ java -jar karate-1.0.0.jar -m main-mock-server.feature -p 8644
 ```
 But the testing againg the mock shows the error:
 ```
-$ java -cp karate-0.9.6.jar:. com.intuit.karate.Main -C MockService-Test.feature
-Junhaos-MacBook-Pro:demo junhaohu$ java -cp karate-1.0.0.jar:. com.intuit.karate.Main -C MockService-Test.feature
+$ java -cp karate-1.0.0.jar:. com.intuit.karate.Main -C MockService-Test.feature
 15:29:07.762 [main]  INFO  com.intuit.karate - Karate version: 1.0.0
 15:29:07.923 [main]  INFO  com.intuit.karate - deleted directory: target
 15:29:08.159 [main]  DEBUG com.intuit.karate.Suite - [config] classpath:karate-config.js
